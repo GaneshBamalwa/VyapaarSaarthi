@@ -1,7 +1,16 @@
 <div align="center">
-  <img src="https://via.placeholder.com/800x200/0f172a/3b82f6?text=Vyapaar+Saarthi+-+Enterprise+AI+OS" alt="Vyapaar Saarthi Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px;" />
   <h1>Vyapaar Saarthi 🚀</h1>
   <h3>The Next-Generation AI-Native Operating System for Indian MSMEs</h3>
+  
+  <p>
+    <img src="https://img.shields.io/badge/Python-3.12+-blue.svg?style=flat-square&logo=python&logoColor=white" alt="Python" />
+    <img src="https://img.shields.io/badge/React-18-61dafb.svg?style=flat-square&logo=react&logoColor=black" alt="React" />
+    <img src="https://img.shields.io/badge/FastAPI-0.109+-009688.svg?style=flat-square&logo=fastapi&logoColor=white" alt="FastAPI" />
+    <img src="https://img.shields.io/badge/Google_Gemini-2.5_Pro-4285F4.svg?style=flat-square&logo=google&logoColor=white" alt="Gemini" />
+    <img src="https://img.shields.io/badge/LangGraph-Enabled-FF5A5F.svg?style=flat-square" alt="LangGraph" />
+    <img src="https://img.shields.io/badge/Tailwind_CSS-3.4-38B2AC.svg?style=flat-square&logo=tailwind-css&logoColor=white" alt="Tailwind CSS" />
+  </p>
+
   <p>
     Powered by <b>Google Gemini 2.5 Pro & Flash</b> · <b>Vertex AI</b> · <b>LangGraph</b> · <b>FastAPI</b> · <b>React</b>
   </p>
