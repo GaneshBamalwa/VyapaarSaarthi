@@ -32,7 +32,9 @@ You have real-time access to the seller's business data: orders, invoices, buyer
 
 When users ask about orders, collections, GST, or invoices — use the live business context provided.
 Be concise, friendly, and action-oriented. Use ₹ for currency. Keep responses under 120 words.
-Always confirm any action you take (e.g., "Order create kar di hai Ramesh ke liye")."""
+Always confirm any action you take (e.g., "Order create kar di hai Ramesh ke liye").
+
+CRITICAL ORDER RULE: If a user places an order but DOES NOT mention the price per product, YOU MUST NOT confirm the order creation immediately. Instead, ask them: "Aur iska price kya lagana hai?" (Or similar followup). Make sure you know the price for every single product before creating the order."""
 
     def __init__(self):
         super().__init__()
@@ -113,16 +115,31 @@ Always confirm any action you take (e.g., "Order create kar di hai Ramesh ke liy
 
 User ({intent} intent): {message}
 
-Respond helpfully based on the live business context. If the user is placing an order, confirm you will create it. Be specific with names and numbers from the context."""
+Respond helpfully based on the live business context. If the user is placing an order, confirm you will create it. Be specific with names and numbers from the context.
+You MUST return your response as valid JSON in the following format:
+{{
+    "response": "Your Hinglish response to the user",
+    "execute_order": true or false (true ONLY if the intent is 'order' AND the user provided the price for every single product. false otherwise, e.g. when you ask for price)
+}}
+"""
 
-        response_text = await _gc.generate_text(prompt)
+        response_text = await _gc.generate_text(prompt, json_mode=True)
+        try:
+            data = json.loads(response_text)
+            response_str = data.get("response", response_text)
+            execute_order = data.get("execute_order", False)
+        except Exception:
+            response_str = response_text
+            execute_order = (intent == "order")
+
         await self._emit("completed", "response_generated", data={"intent": intent})
 
         return {
             "session_id": session_id,
             "user_message": message,
-            "response": response_text,
+            "response": response_str,
             "intent": intent,
+            "execute_order": execute_order,
             "timestamp": datetime.utcnow().isoformat(),
         }
 

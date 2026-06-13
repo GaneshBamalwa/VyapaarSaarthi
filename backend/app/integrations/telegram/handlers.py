@@ -87,3 +87,43 @@ async def message_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await update.message.reply_text("An error occurred while processing your request.")
     finally:
         db.close()
+
+async def voice_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    if not is_authorized(user_id):
+        logger.warning(f"Unauthorized access attempt by {user_id}")
+        await update.message.reply_text("Unauthorized access.")
+        return
+
+    logger.info(f"Received voice message from {user_id}")
+    
+    try:
+        voice_file = await update.message.voice.get_file()
+        file_byte_array = await voice_file.download_as_bytearray()
+        
+        # Send a thinking indicator
+        msg = await update.message.reply_text("🎤 Sun rahi hoon... (Listening...)")
+        
+        from app.core.gemini_client import speech_to_text
+        # Telegram voice notes are usually OGG Opus
+        transcription = await speech_to_text(bytes(file_byte_array), mime_type="audio/ogg")
+        
+        logger.info(f"Transcribed voice from {user_id}: {transcription}")
+        
+        # Update the processing message
+        await msg.edit_text(f"📝 *Aapne kaha:*\n_{transcription}_\n\n🔄 Processing...", parse_mode="Markdown")
+        
+        db = SessionLocal()
+        try:
+            service = CommunicationService(db)
+            request = CommunicationRequest(message_text=transcription, user_id=str(user_id))
+            response = await service.process_message(request)
+            
+            reply_text = TelegramFormatter.format_response(response)
+            await msg.edit_text(f"📝 *Aapne kaha:*\n_{transcription}_\n\n{reply_text}", parse_mode="Markdown")
+        finally:
+            db.close()
+            
+    except Exception as e:
+        logger.error(f"Voice handling error: {str(e)}")
+        await update.message.reply_text("Sorry, there was an error processing your voice message.")

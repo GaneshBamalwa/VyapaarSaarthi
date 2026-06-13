@@ -2,7 +2,7 @@ import logging
 import asyncio
 from telegram.ext import Application, CommandHandler, MessageHandler, filters
 from app.integrations.telegram.config import get_telegram_config
-from app.integrations.telegram.handlers import start_handler, help_handler, message_handler
+from app.integrations.telegram.handlers import start_handler, help_handler, message_handler, voice_handler
 
 # Configure logging
 logging.basicConfig(
@@ -22,6 +22,9 @@ def main():
     # Commands
     application.add_handler(CommandHandler("start", start_handler))
     application.add_handler(CommandHandler("help", help_handler))
+    
+    # Voice messages
+    application.add_handler(MessageHandler(filters.VOICE, voice_handler))
     
     # Let message handler parse simulated commands like /orders, etc. if they are typed without handlers
     application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, message_handler))

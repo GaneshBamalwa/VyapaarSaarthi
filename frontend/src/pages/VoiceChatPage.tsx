@@ -420,7 +420,13 @@ registerProcessor('audio-recorder-worklet', AudioProcessingWorklet);
     };
 
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true,
+        },
+      });
       const recCtx = new AudioContext({ sampleRate: 16000 });
       recCtxRef.current = recCtx;
 
@@ -516,17 +522,30 @@ registerProcessor('audio-recorder-worklet', AudioProcessingWorklet);
             </p>
           </div>
         </div>
-        <button
-          onClick={liveMode ? stopLiveMode : startLiveMode}
-          className={clsx(
-            "px-4 py-2 rounded-lg text-sm font-medium transition",
-            liveMode
-              ? "bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30"
-              : "bg-green-500/20 text-green-400 border border-green-500/40 hover:bg-green-500/30"
+        <div className="flex gap-2">
+          {liveMode && (
+            <button
+              onClick={() => {
+                wsRef.current?.send(JSON.stringify({ type: "end_turn" }));
+                setLiveStatus("thinking");
+              }}
+              className="px-4 py-2 rounded-lg text-sm font-medium transition bg-brand/20 text-brand border border-brand/40 hover:bg-brand/30"
+            >
+              Done Speaking
+            </button>
           )}
-        >
-          {liveMode ? "Stop Live" : "Start Live"}
-        </button>
+          <button
+            onClick={liveMode ? stopLiveMode : startLiveMode}
+            className={clsx(
+              "px-4 py-2 rounded-lg text-sm font-medium transition",
+              liveMode
+                ? "bg-red-500/20 text-red-400 border border-red-500/40 hover:bg-red-500/30"
+                : "bg-green-500/20 text-green-400 border border-green-500/40 hover:bg-green-500/30"
+            )}
+          >
+            {liveMode ? "Stop Live" : "Start Live"}
+          </button>
+        </div>
       </div>
 
       {/* Chat area */}

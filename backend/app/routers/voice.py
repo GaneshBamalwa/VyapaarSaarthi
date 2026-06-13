@@ -105,9 +105,9 @@ async def chat(req: ChatRequest, db: Session = Depends(get_db)):
     # Persist conversation user message
     db.add(ChatMessage(session_id=session_id, role="user", content=req.message))
 
-    # If order intent → create order in DB via intake pipeline
+    # If order intent → create order in DB via intake pipeline ONLY if price conditions met
     action_result = None
-    if result["intent"] == "order":
+    if result["intent"] == "order" and result.get("execute_order", False):
         try:
             from app.services.intake_service import IntakeService
             service = IntakeService(db)

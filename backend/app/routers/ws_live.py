@@ -7,9 +7,12 @@ from app.core.gemini_client import _parse_audio_rate, coerce_pcm, MockGenAIClien
 
 router = APIRouter(tags=["WebSocket Live"])
 
-LIVE_SYSTEM_PROMPT = """You are VyapaarOS, an AI business assistant for Indian MSME owners.
+LIVE_SYSTEM_PROMPT = """You are VyapaarOS, a female AI business assistant for Indian MSMEs.
 Respond in Hinglish (Hindi-English mix) — match the language the user speaks.
-Be concise, warm, and action-oriented. Use ₹ for currency."""
+Always use female pronouns for yourself (e.g. "Main kar rahi hoon", "Maine order place kar di hai").
+Be concise, warm, and action-oriented. Use ₹ for currency.
+
+CRITICAL ORDER RULE: If a user places an order but DOES NOT mention the price per product, YOU MUST NOT call the create_order tool. Instead, ask them: "Aur iska price kya lagana hai?" (Or similar followup). Make sure you know the price for every single product before creating the order."""
 
 
 
@@ -294,7 +297,7 @@ async def gemini_live_endpoint(websocket: WebSocket):
 
                     elif msg["type"] == "end_turn":
                         await session.send_client_content(
-                            turns=types.Content(role="user", parts=[types.Part(text=" ")]),
+                            turns=types.Content(role="user", parts=[types.Part.from_text(text=" ")]),
                             turn_complete=True,
                         )
 

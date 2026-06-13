@@ -58,7 +58,7 @@ class RegexIntentParser(IntentParser):
             return IntentParseResult(intent=IntentType.VIEW_OVERDUE)
 
         # Create Order (catch all basic pattern for creation)
-        if "create order" in text or "add order" in text:
+        if "create order" in text or "add order" in text or "place order" in text or "book order" in text:
             return IntentParseResult(intent=IntentType.CREATE_ORDER, entities={"raw_text": text})
 
         return IntentParseResult(intent=IntentType.UNKNOWN)
@@ -76,18 +76,76 @@ class RegexIntentParser(IntentParser):
                 days_ahead += 7
             return (today + datetime.timedelta(days=days_ahead)).isoformat()
         
-        # Simple date extract
-        date_match = re.search(r'(\d{1,2}\s+[a-zA-Z]+)', text)
+        # Numeric date extract like DD-MM-YYYY or YYYY-MM-DD
+        numeric_date_match = re.search(r'(\d{2,4}[-/]\d{1,2}[-/]\d{2,4})', text)
+        if numeric_date_match:
+            return numeric_date_match.group(1)
+            
+        # Simple date extract for explicit formats like "15 June" or "15th June"
+        # Using a list of valid months to avoid matching things like "7 delivery" from "ORD-7 delivery"
+        months = r'(january|february|march|april|may|june|july|august|september|october|november|december|jan|feb|mar|apr|jun|jul|aug|sep|oct|nov|dec)'
+        date_match = re.search(fr'(\d{{1,2}}(?:st|nd|rd|th)?\s+{months})', text, re.IGNORECASE)
         if date_match:
             return date_match.group(1)
+            
+        # Also support "June 15" format
+        date_match_rev = re.search(fr'({months}\s+\d{{1,2}}(?:st|nd|rd|th)?)', text, re.IGNORECASE)
+        if date_match_rev:
+            return date_match_rev.group(1)
+            
         return None
 
 class GeminiIntentParser(IntentParser):
     def parse(self, text: str) -> IntentParseResult:
-        # Phase 2 implementation placeholder
-        return IntentParseResult(intent=IntentType.UNKNOWN)
+        from app.core.gemini_client import get_gemini_client
+        import json
+        
+        client = get_gemini_client()
+        settings = get_settings()
+        
+        system_prompt = f"""You are an intent router for a business application.
+Available intents: {[i.value for i in IntentType]}
+Parse the user's message (which could be in Hindi, English, Hinglish, etc) and map it to an intent.
+Extract entities like 'order_id' (integer), 'delivery_date' (ISO format YYYY-MM-DD), 'customer' (string).
+Always return valid JSON."""
+
+        from google.genai import types
+        import logging
+        logger = logging.getLogger(__name__)
+
+        try:
+            response = client.models.generate_content(
+                model=settings.GEMINI_FLASH_MODEL,
+                contents=text,
+                config=types.GenerateContentConfig(
+                    system_instruction=system_prompt,
+                    response_mime_type="application/json",
+                    temperature=0.1,
+                ),
+            )
+            data = json.loads(response.text)
+            intent_str = data.get("intent", "UNKNOWN")
+            
+            try:
+                intent = IntentType(intent_str)
+            except ValueError:
+                intent = IntentType.UNKNOWN
+                
+            # For CREATE_ORDER, we need the raw text so IntakeAgent can parse it
+            entities = data.get("entities", {})
+            if intent == IntentType.CREATE_ORDER:
+                entities["raw_text"] = text
+                
+            return IntentParseResult(intent=intent, entities=entities)
+        except Exception as e:
+            logger.error(f"GeminiIntentParser Error: {e}")
+            return IntentParseResult(intent=IntentType.UNKNOWN)
 
 def get_intent_parser() -> IntentParser:
-    settings = get_settings()
-    # For now, default to Regex as per requirements
+    import os
+    from dotenv import load_dotenv
+    load_dotenv()
+    
+    if os.getenv("TELEGRAM_USE_GEMINI", "false").lower() == "true":
+        return GeminiIntentParser()
     return RegexIntentParser()

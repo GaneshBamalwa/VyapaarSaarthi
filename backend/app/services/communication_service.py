@@ -68,6 +68,12 @@ class CommunicationService:
             repo = OrderRepository(self.db)
             order = repo.get_by_id(order_id)
             if order:
+                if order.status == OrderStatus.COMPLETED:
+                    return CommunicationResponse(
+                        intent=parsed.intent, 
+                        success=False, 
+                        message=f"Order ORD-{order.id} is already completed and cannot be modified."
+                    )
                 order.delivery_date = date_str
                 self.db.commit()
                 return CommunicationResponse(
