@@ -1,5 +1,8 @@
 import { cn, getStatusColor, formatDate, confidenceToPercent } from "@/lib/utils";
 import type { Order } from "@/types";
+import { CheckCircle2 } from "lucide-react";
+import { fulfillOrder } from "@/services/vyapaarApi";
+import { useState } from "react";
 
 interface Props {
   order: Order;
@@ -7,50 +10,99 @@ interface Props {
 }
 
 export function OrderCard({ order, onClick }: Props) {
+  const [isFulfilling, setIsFulfilling] = useState(false);
+
+  const handleFulfill = async (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setIsFulfilling(true);
+    try {
+      await fulfillOrder(order.id);
+      // The websocket will broadcast the status update and react-query will refetch
+    } catch (err) {
+      console.error("Failed to fulfill order:", err);
+      setIsFulfilling(false);
+    }
+  };
   return (
     <div
       className="glass-card p-4 hover:border-primary/30 transition-all duration-200 cursor-pointer hover:shadow-lg hover:shadow-primary/5 animate-fade-in"
       onClick={() => onClick?.(order)}
     >
-      <div className="flex items-start justify-between gap-3 mb-3">
+      <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 mb-1">
             <span className="text-xs font-mono text-muted-foreground">#{order.id}</span>
             {order.input_type === "voice" && <span className="text-xs">🎤</span>}
             {order.input_type === "image" && <span className="text-xs">📷</span>}
           </div>
-          <p className="text-sm font-medium text-foreground line-clamp-2">{order.raw_input}</p>
+          {order.customer ? (
+            <h3 className="text-base font-semibold text-foreground truncate">
+              {order.customer}
+            </h3>
+          ) : (
+            <h3 className="text-base font-semibold text-foreground italic opacity-70">
+              Unknown Customer
+            </h3>
+          )}
         </div>
         <div className={cn("tag px-2 py-1 shrink-0 rounded-md text-xs font-medium", getStatusColor(order.status))}>
           {order.status}
         </div>
       </div>
 
-      {order.customer && (
-        <div className="text-xs text-muted-foreground mb-2">
-          👤 {order.customer}
-        </div>
-      )}
+      <div className="mb-3 text-sm text-muted-foreground/80 italic line-clamp-2 bg-muted/30 px-2 py-1.5 rounded-md">
+        "{order.raw_input}"
+      </div>
 
-      {order.items.length > 0 && (
-        <div className="flex flex-wrap gap-1.5 mb-2">
+      {order.items.length > 0 ? (
+        <div className="flex flex-col gap-2 mb-3 bg-muted/20 rounded-lg p-2 border border-border/50">
           {order.items.map((item, i) => (
-            <span key={i} className="text-xs bg-muted px-2 py-0.5 rounded-full text-muted-foreground">
-              {item.quantity && `${item.quantity} `}{item.unit && `${item.unit} `}{item.name}
-            </span>
+            <div key={i} className="flex justify-between items-center text-sm">
+              <span className="font-medium text-foreground">{item.name}</span>
+              <div className="flex items-center gap-3 text-muted-foreground">
+                <span className="text-xs">{item.quantity && `${item.quantity} `}{item.unit || ""}</span>
+                {item.price ? <span className="text-xs font-mono">₹{item.price}</span> : null}
+              </div>
+            </div>
           ))}
         </div>
+      ) : (
+        <div className="text-xs text-muted-foreground mb-3">No parsed items</div>
       )}
 
-      <div className="flex items-center justify-between text-xs text-muted-foreground">
-        <span>{formatDate(order.created_at)}</span>
-        {order.confidence !== null && (
-          <span className={cn(
-            "px-1.5 py-0.5 rounded",
-            order.confidence >= 0.8 ? "text-green-400 bg-green-400/10" : "text-yellow-400 bg-yellow-400/10"
-          )}>
-            {confidenceToPercent(order.confidence)} confidence
-          </span>
+      {order.delivery_date && (
+        <div className="text-xs text-muted-foreground mb-3 flex items-center gap-1.5">
+          📅 <span className="font-medium">{order.delivery_date}</span>
+        </div>
+      )}
+
+      <div className="flex items-center justify-between mt-4 pt-3 border-t border-border/40">
+        <div className="flex flex-col text-xs text-muted-foreground">
+          <span>{formatDate(order.created_at)}</span>
+          {order.confidence !== null && (
+            <span className={cn(
+              "mt-1 w-fit px-1.5 py-0.5 rounded",
+              order.confidence >= 0.8 ? "text-green-400 bg-green-400/10" : "text-yellow-400 bg-yellow-400/10"
+            )}>
+              {confidenceToPercent(order.confidence)} confidence
+            </span>
+          )}
+        </div>
+        {order.status !== "COMPLETED" && order.status !== "REJECTED" && (
+          <button
+            onClick={handleFulfill}
+            disabled={isFulfilling}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-500/10 hover:bg-green-500/20 text-green-400 text-xs font-medium transition-colors"
+          >
+            {isFulfilling ? (
+              <span className="animate-pulse">Fulfilling...</span>
+            ) : (
+              <>
+                <CheckCircle2 size={14} />
+                Fulfill
+              </>
+            )}
+          </button>
         )}
       </div>
     </div>

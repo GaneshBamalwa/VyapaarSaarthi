@@ -21,8 +21,15 @@ export const fetchKPIs = (): Promise<DashboardKPIs> =>
 export const fetchOrders = (params?: { skip?: number; limit?: number }): Promise<OrderListResponse> =>
   api.get("/orders", { params }).then((r) => r.data);
 
-export const fetchOrder = (id: number): Promise<Order> =>
-  api.get(`/orders/${id}`).then((r) => r.data);
+export const fetchOrder = async (id: number) => {
+  const res = await api.get(`/orders/${id}`);
+  return res.data;
+};
+
+export const fulfillOrder = async (id: number) => {
+  const res = await api.post(`/orders/${id}/fulfill`);
+  return res.data;
+};
 
 // ─── Intake ──────────────────────────────────────────────────────────────────
 
@@ -95,3 +102,62 @@ export const simulateAmbiguousOrder = () =>
 
 export const simulateOverdueInvoice = () =>
   api.post("/simulator/generate-overdue").then((r) => r.data);
+
+// ─── Voice & Chat ────────────────────────────────────────────────────────────
+
+export const chat = (message: string, sessionId?: string, generateAudio = false) =>
+  api.post("/voice/chat", { message, session_id: sessionId, generate_audio: generateAudio }).then((r) => r.data);
+
+export const transcribe = (formData: FormData) =>
+  api.post("/voice/transcribe", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }).then((r) => r.data);
+
+export const synthesize = (formData: FormData) =>
+  api.post("/voice/synthesize", formData, {
+    headers: { "Content-Type": "multipart/form-data" },
+  }).then((r) => r.data);
+
+export const weeklyBriefing = () =>
+  api.post("/voice/weekly-briefing", null, { timeout: 90000 }).then((r) => r.data);
+
+export const getSessionHistory = (sessionId: string) =>
+  api.get(`/voice/sessions/${sessionId}/history`).then((r) => r.data);
+
+// ─── GST & Invoices ──────────────────────────────────────────────────────────
+
+export const generateInvoice = (payload: any) =>
+  api.post("/gst/invoice/generate", payload).then((r) => r.data);
+
+export const listInvoices = () =>
+  api.get("/gst/invoices").then((r) => r.data);
+
+export const verifyGstin = (gstin: string) =>
+  api.get(`/gst/gstin/verify/${gstin}`).then((r) => r.data);
+
+export const validateReturn = () =>
+  api.post("/gst/validate-return").then((r) => r.data);
+
+export const lookupHsn = (product: string) =>
+  api.get(`/gst/hsn/lookup?product=${encodeURIComponent(product)}`).then((r) => r.data);
+
+// ─── Compliance ──────────────────────────────────────────────────────────────
+
+export const translateNotice = (raw_text: string) =>
+  api.post("/compliance/notice/translate", { raw_text }).then((r) => r.data);
+
+export const listNotices = () =>
+  api.get("/compliance/notices").then((r) => r.data);
+
+export const complianceCalendar = (gstin: string) =>
+  api.get(`/compliance/calendar/${gstin}`).then((r) => r.data);
+
+export const matchSchemes = (payload: any) =>
+  api.post("/compliance/schemes/match", payload).then((r) => r.data);
+
+export const gstrSummary = (period: string) =>
+  api.get(`/compliance/gstr-summary/${period}`).then((r) => r.data);
+
+export const fetchOverdueInvoices = () =>
+  api.get("/collections/overdue").then((r) => r.data);
+

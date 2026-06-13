@@ -37,3 +37,15 @@ async def get_order(order_id: int, db: Session = Depends(get_db)):
     if not order:
         raise HTTPException(status_code=404, detail="Order not found")
     return order
+
+
+@router.post("/orders/{order_id}/fulfill")
+async def fulfill_order(order_id: int, db: Session = Depends(get_db)):
+    from app.models.order import OrderStatus
+    from app.websocket.manager import manager
+    repo = OrderRepository(db)
+    order = repo.update_status(order_id, OrderStatus.COMPLETED)
+    if not order:
+        raise HTTPException(status_code=404, detail="Order not found")
+    await manager.emit_order_event(order.id, order.status.value, {"customer": order.customer})
+    return {"status": "success", "order_id": order.id}

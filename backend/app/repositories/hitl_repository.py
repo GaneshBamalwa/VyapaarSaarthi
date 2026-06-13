@@ -15,6 +15,7 @@ class HITLRepository:
         order_id: Optional[int] = None,
         graph_thread_id: Optional[str] = None,
         reason: Optional[str] = None,
+        action_type: str = "order",
     ) -> HITLQueue:
         item = HITLQueue(
             order_id=order_id,
@@ -22,10 +23,12 @@ class HITLRepository:
             status=HITLStatus.PENDING,
             reason=reason,
             payload=payload,
+            action_type=action_type,
         )
         self.db.add(item)
         self.db.commit()
         self.db.refresh(item)
+
         return item
 
     def get_by_id(self, hitl_id: int) -> Optional[HITLQueue]:

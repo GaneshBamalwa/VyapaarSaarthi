@@ -1,49 +1,84 @@
-# Vyapaar Saarthi 🚀
-### AI-Native Operating System for Indian MSMEs
-
-> Powered by **Gemini 2.5 Flash/Pro · Vertex AI · LangGraph · FastAPI · React**
-
----
-
-## 🎯 What This Is
-
-Vyapaar Saarthi is a **modular AI agent platform** — not a chatbot. Each agent is independently callable and participates in LangGraph-orchestrated workflows.
-
-**Agents:**
-| Agent | Purpose | Model |
-|-------|---------|-------|
-| 🧾 Intake Agent | Parse Hindi/English orders → Structured JSON | Gemini 2.5 Flash |
-| 🔍 Clarification Agent | Detect ambiguous orders | Gemini 2.5 Flash |
-| 👁️ OCR Agent | Image/PDF → Text (WhatsApp, receipts) | Gemini 2.5 Pro Vision |
-| 🎤 Speech Agent | Voice notes → Transcript | Vertex AI Speech |
-| 💰 Collections Agent | Overdue invoice → Hindi reminder + risk | Gemini 2.5 Flash |
+<div align="center">
+  <img src="https://via.placeholder.com/800x200/0f172a/3b82f6?text=Vyapaar+Saarthi+-+Enterprise+AI+OS" alt="Vyapaar Saarthi Banner" width="100%" style="border-radius: 12px; margin-bottom: 20px;" />
+  <h1>Vyapaar Saarthi 🚀</h1>
+  <h3>The Next-Generation AI-Native Operating System for Indian MSMEs</h3>
+  <p>
+    Powered by <b>Google Gemini 2.5 Pro & Flash</b> · <b>Vertex AI</b> · <b>LangGraph</b> · <b>FastAPI</b> · <b>React</b>
+  </p>
+</div>
 
 ---
 
-## 🏗️ Architecture
+## 🎯 Enterprise Vision
 
+Vyapaar Saarthi is a **mission-critical, modular AI agent platform** designed specifically for Indian Micro, Small, and Medium Enterprises (MSMEs). It transcends traditional chatbots by offering an ecosystem of independently callable, state-aware AI Agents orchestrated via LangGraph. 
+
+From processing multilingual voice orders and analyzing complex GST documents to mitigating supply chain risks, Vyapaar Saarthi operates as the autonomous central nervous system for your business operations.
+
+---
+
+## 🌟 Core Features
+
+- **🎙️ Gemini Live Bidirectional Voice Streaming:** Fully immersive, low-latency conversational AI that interfaces directly with your business database in real-time.
+- **🗣️ Native Hinglish & Regional Parsing:** Robust NLP engine that flawlessly understands Devanagari script ("ऑर्डर प्लेस कर दो"), regional dialects, and mixed-language business vernacular.
+- **🧾 Autonomous Order Management:** Background agents extract Products, Quantities, Pricing, and Delivery Dates from unstructured voice notes into strict, type-safe JSON schemas.
+- **👁️ Vision & OCR Intelligence:** Extract structured data instantly from raw WhatsApp screenshots, handwritten receipts, and vendor invoices using **Gemini 2.5 Pro Vision**.
+- **🛡️ Human-in-the-Loop (HITL):** LangGraph orchestration gracefully suspends ambiguous or high-risk workflows for manager approval before committing to the database.
+- **⚡ Real-Time Streaming UI:** Event-driven architecture using WebSockets for a sub-second, token-by-token "Typewriter" streaming experience across the dashboard.
+
+---
+
+## 🏗️ Architecture Design
+
+### Agentic Orchestration Flow
+
+```mermaid
+graph TD
+    classDef default fill:#1e293b,stroke:#3b82f6,stroke-width:2px,color:#fff;
+    classDef ai fill:#3b82f6,stroke:#1d4ed8,stroke-width:2px,color:#fff;
+    classDef db fill:#10b981,stroke:#047857,stroke-width:2px,color:#fff;
+    classDef hitl fill:#f59e0b,stroke:#b45309,stroke-width:2px,color:#fff;
+
+    A[User Client / React UI] -->|REST / WebSocket| B(FastAPI Gateway)
+    B -->|Bidi Audio / Text| C{Agentic Router}
+    
+    C -->|Voice Orders| D[Intake Agent]:::ai
+    C -->|Images/PDFs| E[OCR Agent]:::ai
+    C -->|Invoice Data| F[Collections Agent]:::ai
+    C -->|Complex Workflows| G[LangGraph Orchestrator]:::ai
+    
+    D --> H[(PostgreSQL Database)]:::db
+    E --> H
+    F --> H
+    
+    G -->|Ambiguity Detected| I[HITL Approval Queue]:::hitl
+    I -->|User Approves| H
 ```
-backend/
-  app/
-    agents/       ← Intake, Clarification, OCR, Speech, Collections
-    graph/        ← LangGraph main pipeline with HITL
-    services/     ← Business logic layer
-    repositories/ ← Data access layer
-    routers/      ← Thin API routes
-    models/       ← SQLAlchemy models
-    schemas/      ← Pydantic schemas
-    websocket/    ← Connection manager
-    core/         ← Config, logging, Gemini client
-    database/     ← SQLAlchemy session
 
-frontend/
-  src/
-    pages/        ← One page per agent + dashboard
-    components/   ← KPICard, AgentStatusCard, FeedItem, HITLCard
-    hooks/        ← useWebSocket
-    stores/       ← Zustand agent state store
-    services/     ← API client layer
-    layouts/      ← AppLayout with sidebar
+### Modular Component Architecture
+
+```mermaid
+classDiagram
+    class Frontend {
+        +React (Vite)
+        +Zustand State Store
+        +WebSockets Streaming
+        +Tailwind CSS & Framer Motion
+    }
+    class Backend {
+        +FastAPI (Async)
+        +SQLAlchemy ORM
+        +Pydantic Validation
+        +LangGraph Workflows
+    }
+    class AI_Models {
+        +Gemini 2.5 Flash (Workhorse)
+        +Gemini 2.5 Pro (Vision & Reasoning)
+        +Vertex AI Speech
+    }
+    
+    Frontend <--> Backend : REST & WS Streams
+    Backend <--> AI_Models : GCP SDK / v1alpha Calls
 ```
 
 ---
@@ -53,7 +88,7 @@ frontend/
 ### Prerequisites
 - Python 3.12+
 - Node.js 20+
-- Gemini API Key (or GCP project with Vertex AI)
+- Gemini API Key (or GCP project with Vertex AI Application Default Credentials)
 
 ### 1. Backend Setup
 
@@ -89,79 +124,43 @@ Open **http://localhost:5174**
 
 ---
 
-## 🔑 Environment Variables
-
-```env
-# For local dev with Gemini API key (simplest)
-GEMINI_API_KEY=your-key-here
-
-# For production with Vertex AI
-GCP_PROJECT_ID=your-project
-GCP_LOCATION=us-central1
-```
-
----
-
-## 🐳 Docker
-
-```bash
-# Copy env file
-cp backend/.env.example backend/.env
-# Edit backend/.env with your API key
-
-# Start everything
-docker-compose up --build
-```
-
----
-
-## 📡 API Endpoints
+## 📡 Enterprise API Endpoints
 
 | Method | Path | Description |
 |--------|------|-------------|
-| `POST` | `/api/intake` | Parse order text |
-| `GET` | `/api/orders` | List all orders |
-| `POST` | `/api/ocr/extract` | OCR from file upload |
-| `POST` | `/api/speech/transcribe` | Audio → transcript |
-| `POST` | `/api/collections/analyze` | Invoice risk + reminder |
-| `GET` | `/api/hitl/pending` | Get HITL queue |
-| `POST` | `/api/hitl/{id}/resolve` | Approve/reject |
-| `POST` | `/api/simulator/generate-order` | Demo data |
-| `WS` | `/ws` | Live agent events |
+| `WS` | `/ws/live` | **Gemini Live Bidirectional Streaming Connection** |
+| `POST` | `/api/intake` | Parse unstructured order text into DB objects |
+| `GET` | `/api/orders` | Retrieve paginated global order book |
+| `POST` | `/api/orders/{id}/fulfill` | Mark a specific order as COMPLETED |
+| `POST` | `/api/ocr/extract` | Perform deep OCR on file uploads |
+| `POST` | `/api/voice/chat` | Fallback REST standard chat with intent routing |
+| `GET` | `/api/hitl/pending` | Fetch workflows awaiting human approval |
+| `WS` | `/ws` | Subscribe to global agent and order events |
 
 ---
 
-## 🏆 Hackathon Demo Flow
+## 🔌 Scalability: Adding New Agents
 
-1. Open **Simulator** page → click "Generate Sample Order"
-2. Watch **Agent Feed** for real-time streaming events
-3. Click "Generate Ambiguous Order" → go to **Approvals** to review HITL
-4. Test each **agent page** individually with your own inputs
-5. Check **Dashboard** for live KPIs and agent status
+Vyapaar Saarthi uses a strictly decoupled agent architecture. To add a new agent:
 
----
+1. Create `agents/new_agent/` with `agent.py`, `prompt.py`, `schemas.py`.
+2. Extend `BaseAgent` and implement the `invoke()` method.
+3. Wire the endpoint in `routers/new_agent.py` and register in `app/main.py`.
+4. (Optional) Add the agent as a node in `graph/nodes.py` for complex HITL workflows.
+5. Provide standard React UI cards in the Frontend.
 
-## 🔌 Adding New Agents
-
-1. Create `agents/new_agent/` with `agent.py`, `prompt.py`, `schemas.py`
-2. Extend `BaseAgent` and implement `invoke()`
-3. Add router in `routers/new_agent.py`
-4. Register in `app/main.py`
-5. Add LangGraph node in `graph/nodes.py`
-6. Add page in `frontend/src/pages/NewAgentPage.tsx`
-
-The architecture ensures zero structural changes needed.
+The modular architecture ensures **zero structural regression** when expanding the system.
 
 ---
 
-## 🌐 GCP Deployment (Cloud Run)
+## 🌐 Production Deployment
 
 ```bash
-# Build and push backend
+# Build and push backend container
 docker build -t gcr.io/PROJECT_ID/vyapaar-backend ./backend
 docker push gcr.io/PROJECT_ID/vyapaar-backend
 
-# Deploy
+# Deploy to Cloud Run
 gcloud run deploy vyapaar-backend \
   --image gcr.io/PROJECT_ID/vyapaar-backend \
   --platform managed \

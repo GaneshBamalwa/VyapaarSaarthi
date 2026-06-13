@@ -1,0 +1,22 @@
+{
+  "steel_rods": {"hsn": "7214", "description": "Iron or non-alloy steel bars/rods", "gst_rate": 18},
+  "iron_sheets": {"hsn": "7209", "description": "Flat-rolled iron/steel products", "gst_rate": 18},
+  "copper_wire": {"hsn": "7408", "description": "Copper wire", "gst_rate": 18},
+  "cement": {"hsn": "2523", "description": "Portland cement", "gst_rate": 28},
+  "plastic_pipes": {"hsn": "3917", "description": "Plastic tubes, pipes and fittings", "gst_rate": 18},
+  "electrical_cables": {"hsn": "8544", "description": "Insulated wire, cable", "gst_rate": 18},
+  "paint": {"hsn": "3208", "description": "Paints and varnishes", "gst_rate": 18},
+  "tiles": {"hsn": "6907", "description": "Ceramic tiles", "gst_rate": 18},
+  "plywood": {"hsn": "4412", "description": "Plywood and similar laminated wood", "gst_rate": 18},
+  "fertilizer": {"hsn": "3102", "description": "Nitrogenous fertilizers", "gst_rate": 5},
+  "rice": {"hsn": "1006", "description": "Rice", "gst_rate": 5},
+  "wheat": {"hsn": "1001", "description": "Wheat and meslin", "gst_rate": 5},
+  "sugar": {"hsn": "1701", "description": "Cane or beet sugar", "gst_rate": 5},
+  "cotton_yarn": {"hsn": "5205", "description": "Cotton yarn", "gst_rate": 5},
+  "jute_bags": {"hsn": "6305", "description": "Sacks and bags of jute", "gst_rate": 5},
+  "pharmaceuticals": {"hsn": "3004", "description": "Medicaments", "gst_rate": 12},
+  "machinery_parts": {"hsn": "8484", "description": "Gaskets and mechanical seals", "gst_rate": 18},
+  "solar_panels": {"hsn": "8541", "description": "Photovoltaic cells", "gst_rate": 12},
+  "mobile_phones": {"hsn": "8517", "description": "Telephone sets", "gst_rate": 12},
+  "computers": {"hsn": "8471", "description": "Automatic data processing machines", "gst_rate": 18}
+}

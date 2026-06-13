@@ -32,7 +32,7 @@ class BaseAgent(ABC):
         order_id: int | None = None,
         error: str | None = None,
     ) -> None:
-        """Emit agent event over WebSocket."""
+        """Emit agent event over WebSocket and persist in DB."""
         await manager.emit_agent_event(
             agent=self.name,
             status=status,
@@ -41,6 +41,25 @@ class BaseAgent(ABC):
             order_id=order_id,
             error=error,
         )
+        try:
+            from app.database.session import SessionLocal
+            from app.models.agent_trace import AgentTrace
+            from datetime import datetime
+            with SessionLocal() as db:
+                trace = AgentTrace(
+                    agent=self.name,
+                    event=event,
+                    status=status,
+                    payload=data,
+                    error=error,
+                    order_id=order_id,
+                    timestamp=datetime.utcnow()
+                )
+                db.add(trace)
+                db.commit()
+        except Exception as e:
+            self.logger.warning(f"Failed to persist agent trace: {e}")
+
 
     def _success(self, data: Any, **meta) -> dict[str, Any]:
         return {"status": "success", "agent": self.name, "data": data, **meta}

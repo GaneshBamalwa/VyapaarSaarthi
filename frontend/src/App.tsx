@@ -10,6 +10,8 @@ import { OCRAgentPage } from "@/pages/OCRAgentPage";
 import { SpeechAgentPage } from "@/pages/SpeechAgentPage";
 import { CollectionsAgentPage } from "@/pages/CollectionsAgentPage";
 import { SimulatorPage } from "@/pages/SimulatorPage";
+import GSTCompliancePage from "@/pages/GSTCompliancePage";
+import VoiceChatPage from "@/pages/VoiceChatPage";
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,10 +32,12 @@ function App() {
             <Route path="/orders" element={<OrdersPage />} />
             <Route path="/approvals" element={<ApprovalsPage />} />
             <Route path="/feed" element={<AgentFeedPage />} />
+            <Route path="/voice-chat" element={<VoiceChatPage />} />
             <Route path="/agents/intake" element={<IntakeAgentPage />} />
             <Route path="/agents/ocr" element={<OCRAgentPage />} />
             <Route path="/agents/speech" element={<SpeechAgentPage />} />
             <Route path="/agents/collections" element={<CollectionsAgentPage />} />
+            <Route path="/agents/gst" element={<GSTCompliancePage />} />
             <Route path="/simulator" element={<SimulatorPage />} />
           </Route>
         </Routes>

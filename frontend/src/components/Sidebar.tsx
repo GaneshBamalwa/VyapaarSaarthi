@@ -11,6 +11,8 @@ import {
   Zap,
   Wifi,
   WifiOff,
+  Shield,
+  MessageSquare,
 } from "lucide-react";
 import { useAgentStore } from "@/stores/agentStore";
 import { cn } from "@/lib/utils";
@@ -20,11 +22,13 @@ const NAV_ITEMS = [
   { label: "Orders", icon: ShoppingCart, path: "/orders" },
   { label: "Approvals", icon: CheckSquare, path: "/approvals" },
   { label: "Agent Feed", icon: Activity, path: "/feed" },
+  { label: "Voice Chat", icon: MessageSquare, path: "/voice-chat" },
   { divider: true },
   { label: "Intake Agent", icon: Package, path: "/agents/intake" },
   { label: "OCR Agent", icon: Eye, path: "/agents/ocr" },
   { label: "Speech Agent", icon: Mic, path: "/agents/speech" },
   { label: "Collections Agent", icon: DollarSign, path: "/agents/collections" },
+  { label: "GST & Compliance", icon: Shield, path: "/agents/gst" },
   { divider: true },
   { label: "Simulator", icon: Zap, path: "/simulator" },
 ];

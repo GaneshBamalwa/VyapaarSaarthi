@@ -15,6 +15,7 @@ class HITLQueue(Base):
     __tablename__ = "hitl_queue"
 
     id = Column(Integer, primary_key=True, index=True)
+    action_type = Column(String(50), default="order", nullable=True)  # order, invoice_draft, reminder, notice_response
     order_id = Column(Integer, nullable=True, index=True)
     graph_thread_id = Column(String(255), nullable=True)
     status = Column(Enum(HITLStatus), default=HITLStatus.PENDING)

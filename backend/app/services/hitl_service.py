@@ -45,15 +45,43 @@ class HITLService:
             reviewer_notes=request.reviewer_notes,
         )
 
+        # Handle Invoice Creation if action_type is invoice_draft
+        if item.action_type == "invoice_draft" and request.action in ["approve", "edit"]:
+            try:
+                from app.models.invoice import Invoice
+                inv_data = request.edited_payload or item.payload or {}
+                buyer_name = inv_data.get("buyer", {}).get("name", "") if isinstance(inv_data.get("buyer"), dict) else inv_data.get("buyer_name", "")
+                buyer_state = inv_data.get("buyer", {}).get("state", "") if isinstance(inv_data.get("buyer"), dict) else inv_data.get("buyer_state", "")
+                
+                invoice = Invoice(
+                    invoice_number=inv_data.get("invoice_number"),
+                    order_id=item.order_id,
+                    buyer_name=buyer_name,
+                    buyer_state=buyer_state,
+                    line_items=inv_data.get("line_items", []),
+                    subtotal=inv_data.get("subtotal", 0.0),
+                    cgst=inv_data.get("cgst", 0.0),
+                    sgst=inv_data.get("sgst", 0.0),
+                    igst=inv_data.get("igst", 0.0),
+                    total=inv_data.get("grand_total") or inv_data.get("total") or 0.0,
+                    tax_type=inv_data.get("tax_type", ""),
+                    status="approved",
+                )
+                self.hitl_repo.db.add(invoice)
+                self.hitl_repo.db.commit()
+            except Exception as e:
+                logger.error(f"Failed to create invoice from HITL: {e}")
+
         # Update order status based on decision
         if item.order_id:
             order_status = (
-                OrderStatus.APPROVED
-                if request.action in ["approve", "edit"]
-                else OrderStatus.REJECTED
+                OrderStatus.COMPLETED
+                if (item.action_type == "invoice_draft" and request.action in ["approve", "edit"])
+                else (OrderStatus.APPROVED if request.action in ["approve", "edit"] else OrderStatus.REJECTED)
             )
             self.order_repo.update_status(item.order_id, order_status)
             await manager.emit_order_event(item.order_id, order_status.value)
+
 
         # Resume LangGraph if thread exists
         if item.graph_thread_id and request.action in ["approve", "edit"]:

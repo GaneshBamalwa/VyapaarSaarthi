@@ -35,5 +35,5 @@ def get_db() -> Generator[Session, None, None]:
 
 
 def init_db() -> None:
-    from app.models import order, agent_trace, hitl_queue  # noqa: F401
+    import app.models  # noqa: F401
     Base.metadata.create_all(bind=engine)

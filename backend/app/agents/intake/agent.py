@@ -26,11 +26,15 @@ class IntakeAgent(BaseAgent):
             client = get_gemini_client()
             prompt = INTAKE_USER_TEMPLATE.format(input_text=input_data.text)
 
+            import datetime
+            current_time = datetime.datetime.now().strftime("%A, %Y-%m-%d %I:%M %p")
+            dynamic_system_prompt = f"{INTAKE_SYSTEM_PROMPT}\n\nCRITICAL CONTEXT: The current real-world date and time is {current_time}. Use this to accurately calculate relative dates like 'tomorrow', 'next week', 'aaj', 'kal', etc."
+
             response = client.models.generate_content(
                 model=settings.GEMINI_FLASH_MODEL,
                 contents=prompt,
                 config={
-                    "system_instruction": INTAKE_SYSTEM_PROMPT,
+                    "system_instruction": dynamic_system_prompt,
                     "response_mime_type": "application/json",
                     "temperature": 0.1,
                 },
