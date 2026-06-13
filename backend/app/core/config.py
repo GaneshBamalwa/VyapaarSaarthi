@@ -60,6 +60,11 @@ class Settings(BaseSettings):
     GEMINI_API_KEY: Optional[str] = None
     USE_MOCK_GCP: bool = False
 
+    # Telegram Integration
+    TELEGRAM_BOT_TOKEN: Optional[str] = None
+    TELEGRAM_ALLOWED_CHAT_IDS: str = ""
+    TELEGRAM_ADMIN_IDS: str = ""
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",
