@@ -1,21 +1,10 @@
-# Node modules and build output
 node_modules/
-dist/
-.env
-
-# Python virtual environment and cache
-venv/
 .venv/
 __pycache__/
 *.pyc
-*.pyo
-*.pyd
-
-# SQLite database
 *.db
-*.sqlite3
-
-# OS and IDE configuration
-.vscode/
-.idea/
+*.sqlite
+.env
+static/audio/*.mp3
+dist/
 .DS_Store
