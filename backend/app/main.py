@@ -11,7 +11,7 @@ from app.database.seed import seed_database
 from app.websocket.manager import manager
 from app.routers import (
     dashboard, intake, ocr, speech, collections, hitl, simulator, agents,
-    gst, compliance, voice, ws_live
+    gst, compliance, voice, ws_live, whatsapp, communication
 )
 
 configure_logging()
@@ -65,6 +65,8 @@ app.include_router(gst.router)
 app.include_router(compliance.router)
 app.include_router(voice.router)
 app.include_router(ws_live.router)
+app.include_router(whatsapp.router)
+app.include_router(communication.router)
 
 
 @app.get("/health")

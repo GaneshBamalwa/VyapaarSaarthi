@@ -65,6 +65,13 @@ class Settings(BaseSettings):
     TELEGRAM_ALLOWED_CHAT_IDS: str = ""
     TELEGRAM_ADMIN_IDS: str = ""
 
+    # WhatsApp Integration (Meta Cloud API)
+    WHATSAPP_TOKEN: Optional[str] = None
+    WHATSAPP_PHONE_NUMBER_ID: Optional[str] = None
+    WHATSAPP_VERIFY_TOKEN: str = "vyapaar-saarthi-verify"
+    WHATSAPP_API_VERSION: str = "v21.0"
+    WHATSAPP_ALLOWED_NUMBERS: str = ""
+
     model_config = {
         "env_file": ".env",
         "env_file_encoding": "utf-8",

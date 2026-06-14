@@ -32,66 +32,124 @@
   }
 }
 
-/* CSS Custom Properties for theming */
-:root {
+/* Map the semantic tokens (used as bg-card, text-foreground, border-border, …)
+   to runtime CSS variables so they resolve AND react to the active theme.
+   `inline` keeps utilities referencing the variable, so flipping data-theme
+   re-themes the whole app. */
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-accent: hsl(var(--accent));
+  --color-destructive: hsl(var(--destructive));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-success: hsl(var(--success));
+  --color-warning: hsl(var(--warning));
+  --color-info: hsl(var(--info));
+}
+
+/* ── Dark theme (default) ─────────────────────────────────────────────────── */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
   --background: 222 47% 6%;
   --foreground: 213 31% 91%;
-  --card: 222 47% 8%;
+  --card: 222 47% 9%;
   --card-foreground: 213 31% 91%;
   --primary: 30 95% 55%;
   --primary-foreground: 222 47% 6%;
   --secondary: 245 58% 58%;
-  --muted: 223 47% 12%;
-  --muted-foreground: 215 16% 47%;
+  --muted: 223 47% 13%;
+  --muted-foreground: 215 16% 57%;
   --accent: 245 58% 58%;
   --destructive: 0 84% 60%;
-  --border: 223 47% 14%;
+  --border: 223 30% 18%;
   --input: 223 47% 12%;
+  --ring: 30 95% 55%;
   --radius: 0.75rem;
   --success: 142 71% 45%;
   --warning: 38 92% 50%;
   --info: 199 89% 48%;
 }
 
+/* ── Light theme ──────────────────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --background: 210 40% 97%;
+  --foreground: 222 47% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 12%;
+  --primary: 24 94% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 245 55% 55%;
+  --muted: 220 18% 93%;
+  --muted-foreground: 215 16% 42%;
+  --accent: 245 55% 55%;
+  --destructive: 0 72% 51%;
+  --border: 220 18% 86%;
+  --input: 220 18% 90%;
+  --ring: 24 94% 50%;
+  --success: 142 64% 36%;
+  --warning: 35 92% 42%;
+  --info: 199 89% 42%;
+}
+
 * {
   box-sizing: border-box;
-  border-color: hsl(223 47% 14%);
+  border-color: hsl(var(--border));
 }
 
 body {
-  background-color: hsl(222 47% 6%);
-  color: hsl(213 31% 91%);
+  background-color: hsl(var(--background));
+  color: hsl(var(--foreground));
   font-family: "Inter", system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Custom scrollbar */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
-::-webkit-scrollbar-track { background: hsl(223 47% 12%); }
-::-webkit-scrollbar-thumb { background: hsl(223 47% 20%); border-radius: 9999px; }
-::-webkit-scrollbar-thumb:hover { background: hsl(215 16% 47%); }
+::-webkit-scrollbar-track { background: hsl(var(--muted)); }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
 
 /* Glass morphism card */
 .glass-card {
-  background: hsl(222 47% 8% / 0.6);
+  background: hsl(var(--card) / 0.6);
+  -webkit-backdrop-filter: blur(20px);
   backdrop-filter: blur(20px);
-  border: 1px solid hsl(223 47% 14% / 0.5);
+  border: 1px solid hsl(var(--border) / 0.6);
   border-radius: 0.75rem;
+}
+
+/* Frosted glass surface — used by the sidebar */
+.glass-panel {
+  background: hsl(var(--card) / 0.55);
+  -webkit-backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(24px) saturate(140%);
 }
 
 /* Agent status dots */
 .status-dot { width: 8px; height: 8px; border-radius: 9999px; display: inline-block; }
-.status-idle { background-color: hsl(215 16% 47%); }
-.status-running { background-color: hsl(199 89% 48%); animation: pulse 2s infinite; }
-.status-completed { background-color: hsl(142 71% 45%); }
-.status-failed { background-color: hsl(0 84% 60%); }
-.status-waiting { background-color: hsl(38 92% 50%); animation: pulse 2s infinite; }
+.status-idle { background-color: hsl(var(--muted-foreground)); }
+.status-running { background-color: hsl(var(--info)); animation: pulse 2s infinite; }
+.status-completed { background-color: hsl(var(--success)); }
+.status-failed { background-color: hsl(var(--destructive)); }
+.status-waiting { background-color: hsl(var(--warning)); animation: pulse 2s infinite; }
 
 /* Risk badges */
-.risk-low { background: hsl(142 71% 45% / 0.15); color: hsl(142 71% 65%); border: 1px solid hsl(142 71% 45% / 0.3); }
-.risk-medium { background: hsl(38 92% 50% / 0.15); color: hsl(38 92% 70%); border: 1px solid hsl(38 92% 50% / 0.3); }
-.risk-high { background: hsl(0 84% 60% / 0.15); color: hsl(0 84% 75%); border: 1px solid hsl(0 84% 60% / 0.3); }
+.risk-low { background: hsl(var(--success) / 0.15); color: hsl(var(--success)); border: 1px solid hsl(var(--success) / 0.3); }
+.risk-medium { background: hsl(var(--warning) / 0.15); color: hsl(var(--warning)); border: 1px solid hsl(var(--warning) / 0.3); }
+.risk-high { background: hsl(var(--destructive) / 0.15); color: hsl(var(--destructive)); border: 1px solid hsl(var(--destructive) / 0.3); }
 
 /* Gradient text */
 .gradient-text {
@@ -108,23 +166,23 @@ body {
   cursor: default;
 }
 .kpi-card:hover {
-  border-color: hsl(30 95% 55% / 0.3);
-  box-shadow: 0 10px 30px hsl(30 95% 55% / 0.1);
+  border-color: hsl(var(--primary) / 0.3);
+  box-shadow: 0 10px 30px hsl(var(--primary) / 0.1);
 }
 
 /* Primary button */
 .btn-primary {
-  background-color: hsl(30 95% 55%);
-  color: hsl(222 47% 6%);
+  background-color: hsl(var(--primary));
+  color: hsl(var(--primary-foreground));
   transition: all 0.2s;
-  box-shadow: 0 4px 15px hsl(30 95% 55% / 0.25);
+  box-shadow: 0 4px 15px hsl(var(--primary) / 0.25);
   font-weight: 600;
   cursor: pointer;
   border: none;
 }
 .btn-primary:hover {
-  background-color: hsl(30 95% 50%);
-  box-shadow: 0 4px 20px hsl(30 95% 55% / 0.4);
+  background-color: hsl(var(--primary) / 0.9);
+  box-shadow: 0 4px 20px hsl(var(--primary) / 0.4);
   transform: scale(1.02);
 }
 .btn-primary:active { transform: scale(0.98); }
@@ -136,11 +194,11 @@ body {
   gap: 0.75rem;
   padding: 0.75rem;
   border-radius: 0.5rem;
-  background: hsl(223 47% 12% / 0.4);
+  background: hsl(var(--muted) / 0.4);
   transition: all 0.2s;
   animation: fadeIn 0.3s ease-out;
 }
-.feed-item:hover { background: hsl(223 47% 12% / 0.6); }
+.feed-item:hover { background: hsl(var(--muted) / 0.7); }
 
 /* Nav item */
 .nav-item {
@@ -151,34 +209,35 @@ body {
   border-radius: 0.5rem;
   font-size: 0.875rem;
   font-weight: 500;
-  color: hsl(215 16% 47%);
-  transition: all 0.2s;
+  color: hsl(var(--muted-foreground));
+  transition: color 0.2s, background 0.2s;
   cursor: pointer;
   text-decoration: none;
+  border: 1px solid transparent;
 }
-.nav-item:hover { color: hsl(213 31% 91%); background: hsl(223 47% 12% / 0.6); }
+.nav-item:hover { color: hsl(var(--foreground)); background: hsl(var(--muted) / 0.7); }
 .nav-item.active {
-  color: hsl(30 95% 55%);
-  background: hsl(30 95% 55% / 0.1);
-  border: 1px solid hsl(30 95% 55% / 0.2);
+  color: hsl(var(--primary));
+  background: hsl(var(--primary) / 0.12);
+  border-color: hsl(var(--primary) / 0.25);
 }
 
 /* VS Input */
 .vs-input {
   width: 100%;
-  background: hsl(223 47% 12%);
-  border: 1px solid hsl(223 47% 14%);
+  background: hsl(var(--input));
+  border: 1px solid hsl(var(--border));
   border-radius: 0.5rem;
   padding: 0.625rem 1rem;
   font-size: 0.875rem;
-  color: hsl(213 31% 91%);
+  color: hsl(var(--foreground));
   outline: none;
   transition: all 0.2s;
 }
-.vs-input::placeholder { color: hsl(215 16% 47%); }
+.vs-input::placeholder { color: hsl(var(--muted-foreground)); }
 .vs-input:focus {
-  border-color: hsl(30 95% 55% / 0.5);
-  box-shadow: 0 0 0 2px hsl(30 95% 55% / 0.15);
+  border-color: hsl(var(--primary) / 0.5);
+  box-shadow: 0 0 0 2px hsl(var(--primary) / 0.15);
 }
 
 /* Tag */
@@ -193,7 +252,7 @@ body {
 
 /* Skeleton */
 .skeleton {
-  background: hsl(223 47% 12%);
+  background: hsl(var(--muted));
   animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
