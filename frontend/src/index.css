@@ -1,0 +1,277 @@
+@import url('https://fonts.googleapis.com/css2?family=Google+Sans+Flex:opsz,wght@6..144,1..1000&family=JetBrains+Mono:wght@400;500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Google Sans Flex", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", monospace;
+
+  /* Brand colors */
+  --color-saffron-50: #fff8ed;
+  --color-saffron-100: #ffedd5;
+  --color-saffron-200: #fed7aa;
+  --color-saffron-300: #fdba74;
+  --color-saffron-400: #fb923c;
+  --color-saffron-500: #f97316;
+  --color-saffron-600: #ea580c;
+  --color-saffron-700: #c2410c;
+  --color-saffron-800: #9a3412;
+  --color-saffron-900: #7c2d12;
+
+  /* Animations */
+  --animate-fade-in: fadeIn 0.3s ease-out;
+  --animate-slide-up: slideUp 0.3s ease-out;
+  --animate-pulse-slow: pulse 3s ease-in-out infinite;
+
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  @keyframes slideUp {
+    from { transform: translateY(10px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+  }
+}
+
+/* Map the semantic tokens (used as bg-card, text-foreground, border-border, …)
+   to runtime CSS variables so they resolve AND react to the active theme.
+   `inline` keeps utilities referencing the variable, so flipping data-theme
+   re-themes the whole app. */
+@theme inline {
+  --color-background: hsl(var(--background));
+  --color-foreground: hsl(var(--foreground));
+  --color-card: hsl(var(--card));
+  --color-card-foreground: hsl(var(--card-foreground));
+  --color-muted: hsl(var(--muted));
+  --color-muted-foreground: hsl(var(--muted-foreground));
+  --color-primary: hsl(var(--primary));
+  --color-primary-foreground: hsl(var(--primary-foreground));
+  --color-secondary: hsl(var(--secondary));
+  --color-accent: hsl(var(--accent));
+  --color-destructive: hsl(var(--destructive));
+  --color-border: hsl(var(--border));
+  --color-input: hsl(var(--input));
+  --color-ring: hsl(var(--ring));
+  --color-success: hsl(var(--success));
+  --color-warning: hsl(var(--warning));
+  --color-info: hsl(var(--info));
+}
+
+/* ── Dark theme (default) ─────────────────────────────────────────────────── */
+:root,
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --background: 240 9% 4%;
+  --foreground: 240 5% 65%;
+  --card: 240 6% 7%;
+  --card-foreground: 240 6% 90%;
+  --primary: 239 84% 67%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 242 47% 34%;
+  --muted: 240 6% 10%;
+  --muted-foreground: 240 5% 65%;
+  --accent: 239 84% 67%;
+  --destructive: 0 84% 60%;
+  --border: 240 4% 16%;
+  --input: 240 6% 7%;
+  --ring: 239 84% 67%;
+  --radius: 6px;
+  --success: 160 84% 39%;
+  --warning: 38 92% 50%;
+  --info: 239 84% 67%;
+}
+
+/* ── Light theme ──────────────────────────────────────────────────────────── */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --background: 210 40% 97%;
+  --foreground: 222 47% 12%;
+  --card: 0 0% 100%;
+  --card-foreground: 222 47% 12%;
+  --primary: 239 84% 67%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 242 47% 34%;
+  --muted: 220 18% 93%;
+  --muted-foreground: 215 16% 42%;
+  --accent: 239 84% 67%;
+  --destructive: 0 72% 51%;
+  --border: 220 18% 86%;
+  --input: 220 18% 90%;
+  --ring: 239 84% 67%;
+  --success: 142 64% 36%;
+  --warning: 35 92% 42%;
+  --info: 199 89% 42%;
+}
+
+* {
+  box-sizing: border-box;
+  border-color: #27272A;
+}
+
+body {
+  background-color: #09090B;
+  color: #A1A1AA;
+  font-family: "Google Sans Flex", system-ui, sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+  font-variation-settings: "slnt" 0, "wdth" 100, "GRAD" 0, "ROND" 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #E4E4E7;
+  font-weight: 600;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: hsl(var(--muted)); }
+::-webkit-scrollbar-thumb { background: hsl(var(--border)); border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: hsl(var(--muted-foreground)); }
+
+/* Glass morphism card */
+.glass-card {
+  background: #111113;
+  border: 1px solid #27272A;
+  border-radius: 6px;
+  box-shadow: none;
+}
+
+/* Frosted glass surface — used by the sidebar */
+.glass-panel {
+  background: #09090B;
+  border-right: 1px solid #27272A;
+}
+
+/* Agent status dots */
+.status-dot { width: 8px; height: 8px; border-radius: 9999px; display: inline-block; }
+.status-idle { background-color: hsl(var(--muted-foreground)); }
+.status-running { background-color: hsl(var(--info)); animation: pulse 2s infinite; }
+.status-completed { background-color: hsl(var(--success)); }
+.status-failed { background-color: hsl(var(--destructive)); }
+.status-waiting { background-color: hsl(var(--warning)); animation: pulse 2s infinite; }
+
+/* Risk badges */
+.risk-low { background: hsl(var(--success) / 0.15); color: hsl(var(--success)); border: 1px solid hsl(var(--success) / 0.3); }
+.risk-medium { background: hsl(var(--warning) / 0.15); color: hsl(var(--warning)); border: 1px solid hsl(var(--warning) / 0.3); }
+.risk-high { background: hsl(var(--destructive) / 0.15); color: hsl(var(--destructive)); border: 1px solid hsl(var(--destructive) / 0.3); }
+
+/* Gradient text (removed per instructions, returning simple text) */
+.gradient-text {
+  color: #E4E4E7;
+}
+
+/* KPI card */
+.kpi-card {
+  padding: 1.25rem;
+  background: #111113;
+  border: 1px solid #27272A;
+  border-radius: 6px;
+  transition: all 0.2s;
+  cursor: default;
+}
+.kpi-card:hover {
+  border-color: #3F3F46;
+}
+
+/* Primary button */
+.btn-primary {
+  background-color: #6366F1;
+  color: #ffffff;
+  transition: all 0.2s;
+  font-weight: 500;
+  cursor: pointer;
+  border: none;
+  border-radius: 6px;
+  padding: 0.5rem 1rem;
+}
+.btn-primary:hover {
+  background-color: #4f46e5;
+}
+.btn-primary:active { transform: scale(0.98); }
+.btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+/* Feed item */
+.feed-item {
+  display: flex;
+  gap: 0.75rem;
+  padding: 0.75rem;
+  border-radius: 6px;
+  background: #111113;
+  border: 1px solid #27272A;
+  transition: all 0.2s;
+  animation: fadeIn 0.3s ease-out;
+}
+.feed-item:hover { background: #18181B; }
+
+/* Nav item */
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.625rem 0.75rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: #71717A;
+  transition: color 0.2s, background 0.2s;
+  cursor: pointer;
+  text-decoration: none;
+  border-left: 2px solid transparent;
+}
+.nav-item:hover { color: #E4E4E7; background: #18181B; }
+.nav-item.active {
+  color: #E4E4E7;
+  background: #18181B;
+  border-left: 2px solid #6366F1;
+}
+
+/* VS Input */
+.vs-input {
+  width: 100%;
+  background: #111113;
+  border: 1px solid #27272A;
+  border-radius: 6px;
+  padding: 0.625rem 1rem;
+  font-size: 0.875rem;
+  color: #E4E4E7;
+  outline: none;
+  transition: all 0.2s;
+}
+.vs-input::placeholder { color: #52525B; }
+.vs-input:focus {
+  border-color: #6366F1;
+}
+
+/* Tag */
+.tag {
+  font-size: 0.75rem;
+  font-weight: 500;
+  padding: 0.125rem 0.5rem;
+  border-radius: 9999px;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Skeleton */
+.skeleton {
+  background: hsl(var(--muted));
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Animations */
+.animate-fade-in { animation: fadeIn 0.3s ease-out; }
+.animate-slide-up { animation: slideUp 0.3s ease-out; }
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+@keyframes slideUp {
+  from { transform: translateY(10px); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}

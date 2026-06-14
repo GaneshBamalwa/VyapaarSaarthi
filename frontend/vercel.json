@@ -1,0 +1,9 @@
+{
+  "redirects": [
+    {
+      "source": "/(.*)",
+      "destination": "https://vyapaar-frontend-434011815197.asia-south1.run.app",
+      "permanent": false
+    }
+  ]
+}
